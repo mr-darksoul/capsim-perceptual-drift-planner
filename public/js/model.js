@@ -1,5 +1,18 @@
 import { DEFAULT_BOUNDS, ROUNDS } from './constants.js';
 
+const IDEAL_OFFSETS = Object.freeze({
+  traditional: Object.freeze({ deltaPerformance: 0.0, deltaSize: 0.0 }),
+  lowend: Object.freeze({ deltaPerformance: -0.8, deltaSize: 0.8 }),
+  highend: Object.freeze({ deltaPerformance: 1.4, deltaSize: -1.4 }),
+  performance: Object.freeze({ deltaPerformance: 1.4, deltaSize: -1.0 }),
+  size: Object.freeze({ deltaPerformance: 1.0, deltaSize: -1.4 }),
+});
+
+function segmentKey(segment) {
+  const raw = String(segment?.name || segment?.id || '').toLowerCase();
+  return raw.replace(/[^a-z]/g, '');
+}
+
 export function clamp(value, min, max) {
   if (!Number.isFinite(value)) {
     return min;
@@ -65,6 +78,19 @@ export function getSegmentPositionAtRound(segment, round, bounds) {
   return clampPoint(computed, bounds);
 }
 
+export function getSegmentIdealPositionAtRound(segment, round, bounds) {
+  const centerPoint = getSegmentPositionAtRound(segment, round, bounds);
+  const offsets = IDEAL_OFFSETS[segmentKey(segment)] || IDEAL_OFFSETS.traditional;
+
+  return clampPoint(
+    {
+      performance: centerPoint.performance + offsets.deltaPerformance,
+      size: centerPoint.size + offsets.deltaSize,
+    },
+    bounds
+  );
+}
+
 export function getProductPositionAtRound(product, round, bounds) {
   const resolvedRound = normalizeRound(round);
   const steps = Array.isArray(product.repositionPlan)
@@ -94,6 +120,7 @@ export function buildRoundSnapshot(scenario, round) {
   const segments = (scenario.segments || []).map((segment) => ({
     ...segment,
     point: getSegmentPositionAtRound(segment, resolvedRound, bounds),
+    idealPoint: getSegmentIdealPositionAtRound(segment, resolvedRound, bounds),
   }));
 
   const products = (scenario.products || []).map((product) => ({

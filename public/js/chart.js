@@ -23,17 +23,19 @@ const segmentZonePlugin = {
     for (const zone of zones) {
       const centerX = xScale.getPixelForValue(zone.x);
       const centerY = yScale.getPixelForValue(zone.y);
+      const idealX = xScale.getPixelForValue(zone.idealX ?? zone.x);
+      const idealY = yScale.getPixelForValue(zone.idealY ?? zone.y);
       const radiusX = Math.abs(xScale.getPixelForValue(zone.x + radiusUnits) - centerX);
       const radiusY = Math.abs(yScale.getPixelForValue(zone.y + radiusUnits) - centerY);
       const circleRadius = Math.min(radiusX, radiusY);
 
       const gradient = ctx.createRadialGradient(
-        centerX,
-        centerY,
+        idealX,
+        idealY,
         0,
-        centerX,
-        centerY,
-        circleRadius
+        idealX,
+        idealY,
+        circleRadius * 1.5
       );
       gradient.addColorStop(0, 'rgba(30, 64, 175, 0.42)');
       gradient.addColorStop(0.4, 'rgba(59, 130, 246, 0.22)');
@@ -99,7 +101,12 @@ export function createPerceptualChart(canvasElement) {
           callbacks: {
             label(context) {
               const point = context.raw;
-              const type = point.kind === 'segment' ? 'Segment' : 'Product';
+              const type =
+                point.kind === 'segment'
+                  ? 'Segment'
+                  : point.kind === 'ideal'
+                  ? 'Ideal'
+                  : 'Product';
               return `${type}: ${point.label} | Round ${point.round} | ${formatPointLabel(point)}`;
             },
           },
@@ -146,11 +153,23 @@ export function createPerceptualChart(canvasElement) {
     const segmentPoints = snapshot.segments.map((segment) => ({
       x: segment.point.performance,
       y: segment.point.size,
+      idealX: segment.idealPoint.performance,
+      idealY: segment.idealPoint.size,
       label: segment.name,
       id: segment.id,
       round: snapshot.round,
       kind: 'segment',
       color: segment.color,
+    }));
+
+    const idealPoints = snapshot.segments.map((segment) => ({
+      x: segment.idealPoint.performance,
+      y: segment.idealPoint.size,
+      label: `${segment.name} Ideal`,
+      id: `${segment.id}-ideal`,
+      round: snapshot.round,
+      kind: 'ideal',
+      color: '#0b3d91',
     }));
 
     chart.options.plugins.segmentZonePlugin = {
@@ -174,12 +193,22 @@ export function createPerceptualChart(canvasElement) {
       {
         label: 'Segments',
         data: segmentPoints,
-        pointRadius: 7,
-        pointHoverRadius: 9,
+        pointRadius: 4,
+        pointHoverRadius: 6,
         pointStyle: 'circle',
         showLine: false,
         pointBackgroundColor: segmentPoints.map((point) => point.color),
         pointBorderColor: segmentPoints.map((point) => point.color),
+      },
+      {
+        label: 'Ideal Centers',
+        data: idealPoints,
+        pointRadius: 3.5,
+        pointHoverRadius: 5,
+        pointStyle: 'crossRot',
+        showLine: false,
+        pointBackgroundColor: idealPoints.map((point) => point.color),
+        pointBorderColor: idealPoints.map((point) => point.color),
       },
       {
         label: 'Products',
