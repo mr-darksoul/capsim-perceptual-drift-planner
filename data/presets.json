@@ -1,0 +1,583 @@
+{
+  "presets": [
+    {
+      "version": 1,
+      "meta": {
+        "name": "baseline drift",
+        "rounds": 8,
+        "startYear": 2026
+      },
+      "chartBounds": {
+        "sizeMin": 0,
+        "sizeMax": 20,
+        "performanceMin": 0,
+        "performanceMax": 20
+      },
+      "segments": [
+        {
+          "id": "seg-traditional",
+          "name": "Traditional",
+          "color": "#1f77b4",
+          "start": {
+            "size": 13.9,
+            "performance": 6.1
+          },
+          "driftPerRound": {
+            "deltaSize": -0.7,
+            "deltaPerformance": 0.7
+          },
+          "overrides": []
+        },
+        {
+          "id": "seg-low-end",
+          "name": "Low End",
+          "color": "#2ca02c",
+          "start": {
+            "size": 16.6,
+            "performance": 3.4
+          },
+          "driftPerRound": {
+            "deltaSize": -0.5,
+            "deltaPerformance": 0.5
+          },
+          "overrides": []
+        },
+        {
+          "id": "seg-high-end",
+          "name": "High End",
+          "color": "#d62728",
+          "start": {
+            "size": 11.2,
+            "performance": 8.8
+          },
+          "driftPerRound": {
+            "deltaSize": -0.9,
+            "deltaPerformance": 0.9
+          },
+          "overrides": []
+        },
+        {
+          "id": "seg-performance",
+          "name": "Performance",
+          "color": "#ff7f0e",
+          "start": {
+            "size": 16.6,
+            "performance": 8.4
+          },
+          "driftPerRound": {
+            "deltaSize": -0.7,
+            "deltaPerformance": 1
+          },
+          "overrides": []
+        },
+        {
+          "id": "seg-size",
+          "name": "Size",
+          "color": "#9467bd",
+          "start": {
+            "size": 11.6,
+            "performance": 3.4
+          },
+          "driftPerRound": {
+            "deltaSize": -1,
+            "deltaPerformance": 0.7
+          },
+          "overrides": []
+        }
+      ],
+      "products": [
+        {
+          "id": "prd-atlas",
+          "name": "Atlas",
+          "tag": "existing",
+          "color": "#111827",
+          "icon": "circle",
+          "start": {
+            "size": 13.4,
+            "performance": 6.3
+          },
+          "repositionPlan": [
+            {
+              "round": 4,
+              "size": 12,
+              "performance": 8.1
+            },
+            {
+              "round": 7,
+              "size": 10.1,
+              "performance": 9.8
+            }
+          ]
+        },
+        {
+          "id": "prd-bolt",
+          "name": "Bolt",
+          "tag": "existing",
+          "color": "#0f766e",
+          "icon": "rectRounded",
+          "start": {
+            "size": 16.2,
+            "performance": 3.8
+          },
+          "repositionPlan": [
+            {
+              "round": 5,
+              "size": 14.4,
+              "performance": 5.5
+            }
+          ]
+        },
+        {
+          "id": "prd-crest",
+          "name": "Crest",
+          "tag": "existing",
+          "color": "#b45309",
+          "icon": "triangle",
+          "start": {
+            "size": 10.8,
+            "performance": 9.2
+          },
+          "repositionPlan": []
+        },
+        {
+          "id": "prd-nova",
+          "name": "Nova",
+          "tag": "proposed",
+          "color": "#7c3aed",
+          "icon": "star",
+          "start": {
+            "size": 15.5,
+            "performance": 7.4
+          },
+          "repositionPlan": [
+            {
+              "round": 3,
+              "size": 14,
+              "performance": 9.8
+            },
+            {
+              "round": 6,
+              "size": 12.4,
+              "performance": 12.9
+            }
+          ]
+        },
+        {
+          "id": "prd-pulse",
+          "name": "Pulse",
+          "tag": "proposed",
+          "color": "#be123c",
+          "icon": "crossRot",
+          "start": {
+            "size": 9.8,
+            "performance": 5
+          },
+          "repositionPlan": [
+            {
+              "round": 4,
+              "size": 8.2,
+              "performance": 6.7
+            }
+          ]
+        }
+      ],
+      "ui": {
+        "selectedRound": 1,
+        "selectedProductId": null,
+        "showFitLines": false
+      }
+    },
+    {
+      "version": 1,
+      "meta": {
+        "name": "aggressive drift",
+        "rounds": 8,
+        "startYear": 2026
+      },
+      "chartBounds": {
+        "sizeMin": 0,
+        "sizeMax": 20,
+        "performanceMin": 0,
+        "performanceMax": 20
+      },
+      "segments": [
+        {
+          "id": "seg-traditional",
+          "name": "Traditional",
+          "color": "#1f77b4",
+          "start": {
+            "size": 13.9,
+            "performance": 6.1
+          },
+          "driftPerRound": {
+            "deltaSize": -0.7,
+            "deltaPerformance": 0.7
+          },
+          "overrides": [
+            {
+              "round": 1,
+              "size": 13.2,
+              "performance": 6.8
+            },
+            {
+              "round": 2,
+              "size": 12.5,
+              "performance": 7.5
+            },
+            {
+              "round": 3,
+              "size": 11.8,
+              "performance": 8.2
+            },
+            {
+              "round": 4,
+              "size": 11.1,
+              "performance": 8.9
+            },
+            {
+              "round": 5,
+              "size": 10.4,
+              "performance": 9.6
+            },
+            {
+              "round": 6,
+              "size": 9.7,
+              "performance": 10.3
+            },
+            {
+              "round": 7,
+              "size": 9,
+              "performance": 11
+            },
+            {
+              "round": 8,
+              "size": 8.3,
+              "performance": 11.7
+            }
+          ]
+        },
+        {
+          "id": "seg-low-end",
+          "name": "Low End",
+          "color": "#2ca02c",
+          "start": {
+            "size": 16.6,
+            "performance": 3.4
+          },
+          "driftPerRound": {
+            "deltaSize": -0.5,
+            "deltaPerformance": 0.5
+          },
+          "overrides": [
+            {
+              "round": 1,
+              "size": 16.9,
+              "performance": 3.1
+            },
+            {
+              "round": 2,
+              "size": 16.4,
+              "performance": 3.6
+            },
+            {
+              "round": 3,
+              "size": 15.9,
+              "performance": 4.1
+            },
+            {
+              "round": 4,
+              "size": 15.4,
+              "performance": 4.6
+            },
+            {
+              "round": 5,
+              "size": 14.9,
+              "performance": 5.1
+            },
+            {
+              "round": 6,
+              "size": 14.4,
+              "performance": 5.6
+            },
+            {
+              "round": 7,
+              "size": 13.9,
+              "performance": 6.1
+            },
+            {
+              "round": 8,
+              "size": 13.4,
+              "performance": 6.6
+            }
+          ]
+        },
+        {
+          "id": "seg-high-end",
+          "name": "High End",
+          "color": "#d62728",
+          "start": {
+            "size": 11.2,
+            "performance": 8.8
+          },
+          "driftPerRound": {
+            "deltaSize": -0.9,
+            "deltaPerformance": 0.9
+          },
+          "overrides": [
+            {
+              "round": 1,
+              "size": 8.9,
+              "performance": 11.1
+            },
+            {
+              "round": 2,
+              "size": 8,
+              "performance": 12
+            },
+            {
+              "round": 3,
+              "size": 7.1,
+              "performance": 12.9
+            },
+            {
+              "round": 4,
+              "size": 6.2,
+              "performance": 13.8
+            },
+            {
+              "round": 5,
+              "size": 5.3,
+              "performance": 14.7
+            },
+            {
+              "round": 6,
+              "size": 4.4,
+              "performance": 15.6
+            },
+            {
+              "round": 7,
+              "size": 3.5,
+              "performance": 16.5
+            },
+            {
+              "round": 8,
+              "size": 2.6,
+              "performance": 17.4
+            }
+          ]
+        },
+        {
+          "id": "seg-performance",
+          "name": "Performance",
+          "color": "#ff7f0e",
+          "start": {
+            "size": 16.6,
+            "performance": 8.4
+          },
+          "driftPerRound": {
+            "deltaSize": -0.7,
+            "deltaPerformance": 1
+          },
+          "overrides": [
+            {
+              "round": 1,
+              "size": 14.9,
+              "performance": 10.8
+            },
+            {
+              "round": 2,
+              "size": 14.2,
+              "performance": 11.8
+            },
+            {
+              "round": 3,
+              "size": 13.5,
+              "performance": 12.8
+            },
+            {
+              "round": 4,
+              "size": 12.8,
+              "performance": 13.8
+            },
+            {
+              "round": 5,
+              "size": 12.1,
+              "performance": 14.8
+            },
+            {
+              "round": 6,
+              "size": 11.4,
+              "performance": 15.8
+            },
+            {
+              "round": 7,
+              "size": 10.7,
+              "performance": 16.8
+            },
+            {
+              "round": 8,
+              "size": 10,
+              "performance": 17.8
+            }
+          ]
+        },
+        {
+          "id": "seg-size",
+          "name": "Size",
+          "color": "#9467bd",
+          "start": {
+            "size": 11.6,
+            "performance": 3.4
+          },
+          "driftPerRound": {
+            "deltaSize": -1,
+            "deltaPerformance": 0.7
+          },
+          "overrides": [
+            {
+              "round": 1,
+              "size": 9.2,
+              "performance": 5.1
+            },
+            {
+              "round": 2,
+              "size": 8.2,
+              "performance": 5.8
+            },
+            {
+              "round": 3,
+              "size": 7.2,
+              "performance": 6.5
+            },
+            {
+              "round": 4,
+              "size": 6.2,
+              "performance": 7.2
+            },
+            {
+              "round": 5,
+              "size": 5.2,
+              "performance": 7.9
+            },
+            {
+              "round": 6,
+              "size": 4.2,
+              "performance": 8.6
+            },
+            {
+              "round": 7,
+              "size": 3.2,
+              "performance": 9.3
+            },
+            {
+              "round": 8,
+              "size": 2.2,
+              "performance": 10
+            }
+          ]
+        }
+      ],
+      "products": [
+        {
+          "id": "prd-atlas",
+          "name": "Atlas",
+          "tag": "existing",
+          "color": "#111827",
+          "icon": "circle",
+          "start": {
+            "size": 13.4,
+            "performance": 6.3
+          },
+          "repositionPlan": [
+            {
+              "round": 4,
+              "size": 12,
+              "performance": 8.1
+            },
+            {
+              "round": 7,
+              "size": 10.1,
+              "performance": 9.8
+            }
+          ]
+        },
+        {
+          "id": "prd-bolt",
+          "name": "Bolt",
+          "tag": "existing",
+          "color": "#0f766e",
+          "icon": "rectRounded",
+          "start": {
+            "size": 16.2,
+            "performance": 3.8
+          },
+          "repositionPlan": [
+            {
+              "round": 5,
+              "size": 14.4,
+              "performance": 5.5
+            }
+          ]
+        },
+        {
+          "id": "prd-crest",
+          "name": "Crest",
+          "tag": "existing",
+          "color": "#b45309",
+          "icon": "triangle",
+          "start": {
+            "size": 10.8,
+            "performance": 9.2
+          },
+          "repositionPlan": []
+        },
+        {
+          "id": "prd-nova",
+          "name": "Nova",
+          "tag": "proposed",
+          "color": "#7c3aed",
+          "icon": "star",
+          "start": {
+            "size": 15.5,
+            "performance": 7.4
+          },
+          "repositionPlan": [
+            {
+              "round": 3,
+              "size": 14,
+              "performance": 9.8
+            },
+            {
+              "round": 6,
+              "size": 12.4,
+              "performance": 12.9
+            }
+          ]
+        },
+        {
+          "id": "prd-pulse",
+          "name": "Pulse",
+          "tag": "proposed",
+          "color": "#be123c",
+          "icon": "crossRot",
+          "start": {
+            "size": 9.8,
+            "performance": 5
+          },
+          "repositionPlan": [
+            {
+              "round": 4,
+              "size": 8.2,
+              "performance": 6.7
+            }
+          ]
+        }
+      ],
+      "ui": {
+        "selectedRound": 1,
+        "selectedProductId": null,
+        "showFitLines": false
+      }
+    }
+  ]
+}

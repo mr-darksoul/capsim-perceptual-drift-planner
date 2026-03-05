@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capstone 2.0 Perceptual Drift Planner</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>Capstone 2.0 Perceptual Drift Planner</h1>
+        <p>Track segment drift and test product positioning across 8 rounds.</p>
+      </div>
+    </header>
+
+    <main class="app-layout">
+      <section class="map-panel">
+        <div class="panel-head">
+          <h2>Perceptual Map</h2>
+          <div class="round-display">
+            <span id="round-label">Round 1</span>
+            <span id="year-label">Year 2026</span>
+          </div>
+        </div>
+
+        <div class="map-wrapper">
+          <canvas id="perceptual-map" aria-label="Perceptual map chart"></canvas>
+        </div>
+
+        <div class="playback-controls">
+          <label>
+            Round Slider
+            <input type="range" id="round-slider" min="1" max="8" step="1" value="1" />
+          </label>
+          <label>
+            Round
+            <select id="round-select"></select>
+          </label>
+          <button id="play-pause" type="button">Play</button>
+        </div>
+
+        <div class="fit-line-controls">
+          <label>
+            <input type="checkbox" id="show-fit-lines" />
+            Show fit lines from selected product
+          </label>
+          <label>
+            Selected product
+            <select id="line-product-select"></select>
+          </label>
+        </div>
+
+        <section class="legend" id="custom-legend"></section>
+      </section>
+
+      <aside class="side-panel">
+        <section class="panel-section">
+          <h2>Scenario</h2>
+          <label>
+            Preset
+            <select id="scenario-select"></select>
+          </label>
+          <div class="button-row">
+            <button id="export-json" type="button">Export JSON</button>
+            <label class="import-label">
+              Import JSON
+              <input id="import-json" type="file" accept="application/json" />
+            </label>
+          </div>
+          <div id="global-errors" aria-live="polite"></div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-head">
+            <h2>Products</h2>
+            <button id="add-product" type="button">Add Product</button>
+          </div>
+          <div id="product-editor" class="editor-list"></div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Segment Drift</h2>
+          <div id="segment-editor" class="editor-list"></div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Fit Insights (Selected Round)</h2>
+          <div class="fit-table-wrap">
+            <table class="fit-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Nearest Segment</th>
+                  <th>Nearest Dist.</th>
+                  <th>Distances to Segments</th>
+                </tr>
+              </thead>
+              <tbody id="fit-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="/vendor/chartjs/chart.umd.min.js"></script>
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

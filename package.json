@@ -1,0 +1,17 @@
+{
+  "name": "capsim-perceptual-drift-planner",
+  "version": "1.0.0",
+  "description": "Local web app to visualize Capstone 2.0 perceptual map drift over 8 rounds",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.9",
+    "express": "^4.21.2"
+  }
+}
