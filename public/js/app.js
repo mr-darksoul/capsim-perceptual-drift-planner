@@ -5,7 +5,9 @@ import { createPerceptualChart } from './chart.js';
 import { initUI } from './ui.js';
 import { exportScenarioToFile, readJsonFile } from './importExport.js';
 import { validateScenarioClient } from './validation.js';
-import { clampPoint, normalizeBounds, normalizeRound } from './model.js';
+import { clampPoint, normalizeBounds, normalizeMonthIndex, normalizeRound } from './model.js';
+
+const ROUND_ONE_YEAR = 2027;
 
 async function fetchPresets() {
   const response = await fetch('/api/presets');
@@ -32,6 +34,7 @@ async function validateScenarioServer(candidate) {
 function normalizeScenarioClient(scenario) {
   const next = cloneScenario(scenario);
   const bounds = normalizeBounds(next.chartBounds);
+  const rounds = Number.parseInt(next.meta?.rounds, 10) || ROUNDS;
   next.chartBounds = bounds;
 
   next.segments = (next.segments || []).map((segment) => ({
@@ -62,8 +65,15 @@ function normalizeScenarioClient(scenario) {
       .sort((a, b) => Number(a.round) - Number(b.round)),
   }));
 
+  const selectedRound = normalizeRound(next.ui?.selectedRound);
+  const selectedMonthIndex = normalizeMonthIndex(
+    next.ui?.selectedMonthIndex ?? (selectedRound - 1) * 12,
+    rounds
+  );
+
   next.ui = {
-    selectedRound: normalizeRound(next.ui?.selectedRound),
+    selectedRound: Math.floor(selectedMonthIndex / 12) + 1,
+    selectedMonthIndex,
     selectedProductId: next.products.some((product) => product.id === next.ui?.selectedProductId)
       ? next.ui.selectedProductId
       : null,
@@ -73,6 +83,7 @@ function normalizeScenarioClient(scenario) {
   next.meta = {
     ...next.meta,
     rounds: ROUNDS,
+    startYear: ROUND_ONE_YEAR,
   };
 
   return next;
@@ -164,7 +175,19 @@ function createActions(store) {
 
     setRound(round) {
       updateScenario((scenario) => {
-        scenario.ui.selectedRound = normalizeRound(round);
+        const rounds = Number.parseInt(scenario.meta?.rounds, 10) || ROUNDS;
+        const selectedRound = normalizeRound(round);
+        scenario.ui.selectedRound = selectedRound;
+        scenario.ui.selectedMonthIndex = normalizeMonthIndex((selectedRound - 1) * 12, rounds);
+      });
+    },
+
+    setMonthIndex(monthIndex) {
+      updateScenario((scenario) => {
+        const rounds = Number.parseInt(scenario.meta?.rounds, 10) || ROUNDS;
+        const normalizedMonth = normalizeMonthIndex(monthIndex, rounds);
+        scenario.ui.selectedMonthIndex = normalizedMonth;
+        scenario.ui.selectedRound = Math.floor(normalizedMonth / 12) + 1;
       });
     },
 
@@ -187,9 +210,14 @@ function createActions(store) {
           return;
         }
 
-        const currentRound = Number(snapshot.scenario.ui.selectedRound || 1);
-        const nextRound = currentRound >= ROUNDS ? 1 : currentRound + 1;
-        this.setRound(nextRound);
+        const rounds = Number.parseInt(snapshot.scenario.meta?.rounds, 10) || ROUNDS;
+        const maxMonthIndex = rounds * 12 - 1;
+        const currentMonth = normalizeMonthIndex(
+          snapshot.scenario.ui.selectedMonthIndex ?? (snapshot.scenario.ui.selectedRound - 1) * 12,
+          rounds
+        );
+        const nextMonth = currentMonth >= maxMonthIndex ? 0 : currentMonth + 1;
+        this.setMonthIndex(nextMonth);
       }, 900);
     },
 
@@ -337,9 +365,11 @@ async function bootstrap() {
       }
     }
 
+    const normalizedInitialScenario = normalizeScenarioClient(initialScenario);
+
     store.setState({
       presets,
-      scenario: normalizeScenarioClient(initialScenario),
+      scenario: normalizedInitialScenario,
       activePresetName,
       playback: { isPlaying: false },
       globalErrors:
@@ -352,7 +382,7 @@ async function bootstrap() {
       fieldErrors: {},
     });
 
-    saveScenarioToStorage(initialScenario);
+    saveScenarioToStorage(normalizedInitialScenario);
   } catch (error) {
     store.update({
       globalErrors: [error.message || 'Failed to initialize the app.'],

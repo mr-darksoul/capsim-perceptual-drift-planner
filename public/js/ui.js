@@ -1,6 +1,8 @@
 import { ICON_OPTIONS, TAG_OPTIONS, getRoundsList } from './constants.js';
-import { computeFitForRound } from './fit.js';
-import { buildRoundSnapshot } from './model.js';
+import { computeFitForMonth } from './fit.js';
+import { buildMonthSnapshot } from './model.js';
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function escapeHtml(value) {
   return String(value)
@@ -9,10 +11,6 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
-}
-
-function findByRound(entries, round) {
-  return (entries || []).find((entry) => Number(entry.round) === round) || null;
 }
 
 function formatNumber(value, fractionDigits = 2) {
@@ -46,7 +44,7 @@ function renderScenarioOptions(selectElement, presets, selectedName) {
 }
 
 function renderCustomLegend(container, scenario, round) {
-  const snapshot = buildRoundSnapshot(scenario, round);
+  const snapshot = buildMonthSnapshot(scenario, round);
 
   const segmentItems = snapshot.segments
     .map(
@@ -106,43 +104,9 @@ function renderSelectedProductSelect(selectElement, products, selectedProductId)
 }
 
 function renderSegmentEditor(container, scenario, fieldErrors) {
-  const rounds = getRoundsList();
-
   container.innerHTML = scenario.segments
     .map((segment) => {
       const cardError = fieldErrors[`segment:${segment.id}`];
-      const rows = rounds
-        .map((round) => {
-          const override = findByRound(segment.overrides, round);
-          return `
-            <tr>
-              <td>R${round}</td>
-              <td>
-                <input
-                  type="number"
-                  step="0.1"
-                  data-action="segment-override-size"
-                  data-segment-id="${escapeHtml(segment.id)}"
-                  data-round="${round}"
-                  value="${override ? escapeHtml(override.size) : ''}"
-                  placeholder="auto"
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  step="0.1"
-                  data-action="segment-override-performance"
-                  data-segment-id="${escapeHtml(segment.id)}"
-                  data-round="${round}"
-                  value="${override ? escapeHtml(override.performance) : ''}"
-                  placeholder="auto"
-                />
-              </td>
-            </tr>
-          `;
-        })
-        .join('');
 
       return `
         <article class="entity-card" data-segment-id="${escapeHtml(segment.id)}">
@@ -179,14 +143,6 @@ function renderSegmentEditor(container, scenario, fieldErrors) {
               )}" value="${escapeHtml(segment.driftPerRound.deltaPerformance)}" />
             </label>
           </div>
-          <details>
-            <summary>Fine tune overrides by round</summary>
-            <table class="plan-table">
-              <thead><tr><th>Round</th><th>Size</th><th>Performance</th></tr></thead>
-              <tbody>${rows}</tbody>
-            </table>
-            <p class="hint">Leave both fields blank for a round to use drift-based auto position.</p>
-          </details>
           ${cardError ? `<p class="inline-error">${escapeHtml(cardError)}</p>` : ''}
         </article>
       `;
@@ -195,43 +151,9 @@ function renderSegmentEditor(container, scenario, fieldErrors) {
 }
 
 function renderProductEditor(container, scenario, fieldErrors) {
-  const rounds = getRoundsList();
-
   container.innerHTML = scenario.products
     .map((product) => {
       const cardError = fieldErrors[`product:${product.id}`];
-      const rows = rounds
-        .map((round) => {
-          const step = findByRound(product.repositionPlan, round);
-          return `
-            <tr>
-              <td>R${round}</td>
-              <td>
-                <input
-                  type="number"
-                  step="0.1"
-                  data-action="product-plan-size"
-                  data-product-id="${escapeHtml(product.id)}"
-                  data-round="${round}"
-                  value="${step ? escapeHtml(step.size) : ''}"
-                  placeholder="none"
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  step="0.1"
-                  data-action="product-plan-performance"
-                  data-product-id="${escapeHtml(product.id)}"
-                  data-round="${round}"
-                  value="${step ? escapeHtml(step.performance) : ''}"
-                  placeholder="none"
-                />
-              </td>
-            </tr>
-          `;
-        })
-        .join('');
 
       return `
         <article class="entity-card" data-product-id="${escapeHtml(product.id)}">
@@ -279,14 +201,6 @@ function renderProductEditor(container, scenario, fieldErrors) {
               )}" value="${escapeHtml(product.start.performance)}" />
             </label>
           </div>
-          <details>
-            <summary>Per-round reposition plan (absolute positions)</summary>
-            <table class="plan-table">
-              <thead><tr><th>Round</th><th>Size</th><th>Performance</th></tr></thead>
-              <tbody>${rows}</tbody>
-            </table>
-            <p class="hint">Leave both fields blank for a round to keep the latest planned position.</p>
-          </details>
           ${cardError ? `<p class="inline-error">${escapeHtml(cardError)}</p>` : ''}
         </article>
       `;
@@ -294,8 +208,8 @@ function renderProductEditor(container, scenario, fieldErrors) {
     .join('');
 }
 
-function renderFitTable(tbody, scenario, round) {
-  const fitRows = computeFitForRound(scenario, round);
+function renderFitTable(tbody, scenario, monthIndex) {
+  const fitRows = computeFitForMonth(scenario, monthIndex);
 
   tbody.innerHTML = fitRows
     .map((row) => {
@@ -365,7 +279,7 @@ export function initUI({ store, actions, chartController }) {
   });
 
   roundSlider.addEventListener('input', (event) => {
-    actions.setRound(Number(event.target.value));
+    actions.setMonthIndex(Number(event.target.value));
   });
 
   roundSelect.addEventListener('change', (event) => {
@@ -407,7 +321,6 @@ export function initUI({ store, actions, chartController }) {
     }
     const action = target.dataset.action;
     const segmentId = target.dataset.segmentId;
-    const round = Number(target.dataset.round);
     if (!action || !segmentId) {
       return;
     }
@@ -435,51 +348,6 @@ export function initUI({ store, actions, chartController }) {
     }
 
     const parsed = parseNumericInput(target.value);
-
-    if (action === 'segment-override-size' || action === 'segment-override-performance') {
-      const card = target.closest(`[data-segment-id="${segmentId}"]`);
-      const sizeInput = card?.querySelector(
-        `input[data-action="segment-override-size"][data-round="${round}"]`
-      );
-      const performanceInput = card?.querySelector(
-        `input[data-action="segment-override-performance"][data-round="${round}"]`
-      );
-      const sizeValue = parseNumericInput(sizeInput?.value);
-      const performanceValue = parseNumericInput(performanceInput?.value);
-
-      if ((sizeInput?.value || '') === '' && (performanceInput?.value || '') === '') {
-        actions.clearFieldError(inputErrorKey);
-        actions.updateSegment(segmentId, (segment) => {
-          segment.overrides = (segment.overrides || []).filter(
-            (entry) => Number(entry.round) !== round
-          );
-        });
-        return;
-      }
-
-      if (sizeValue === null || performanceValue === null) {
-        actions.setFieldError(
-          inputErrorKey,
-          `Segment override round ${round} requires numeric Size and Performance.`
-        );
-        return;
-      }
-
-      actions.clearFieldError(inputErrorKey);
-      actions.updateSegment(segmentId, (segment) => {
-        const overrides = (segment.overrides || []).filter(
-          (entry) => Number(entry.round) !== round
-        );
-        overrides.push({
-          round,
-          size: sizeValue,
-          performance: performanceValue,
-        });
-        overrides.sort((a, b) => Number(a.round) - Number(b.round));
-        segment.overrides = overrides;
-      });
-      return;
-    }
 
     if (parsed === null) {
       actions.setFieldError(inputErrorKey, 'Numeric fields require finite numbers.');
@@ -525,7 +393,6 @@ export function initUI({ store, actions, chartController }) {
 
     const action = target.dataset.action;
     const productId = target.dataset.productId;
-    const round = Number(target.dataset.round);
     if (!action || !productId) {
       return;
     }
@@ -568,47 +435,6 @@ export function initUI({ store, actions, chartController }) {
       return;
     }
 
-    if (action === 'product-plan-size' || action === 'product-plan-performance') {
-      const card = target.closest(`[data-product-id="${productId}"]`);
-      const sizeInput = card?.querySelector(
-        `input[data-action="product-plan-size"][data-round="${round}"]`
-      );
-      const performanceInput = card?.querySelector(
-        `input[data-action="product-plan-performance"][data-round="${round}"]`
-      );
-      const sizeValue = parseNumericInput(sizeInput?.value);
-      const performanceValue = parseNumericInput(performanceInput?.value);
-
-      if ((sizeInput?.value || '') === '' && (performanceInput?.value || '') === '') {
-        actions.clearFieldError(inputErrorKey);
-        actions.updateProduct(productId, (product) => {
-          product.repositionPlan = (product.repositionPlan || []).filter(
-            (entry) => Number(entry.round) !== round
-          );
-        });
-        return;
-      }
-
-      if (sizeValue === null || performanceValue === null) {
-        actions.setFieldError(
-          inputErrorKey,
-          `Product reposition round ${round} requires numeric Size and Performance.`
-        );
-        return;
-      }
-
-      actions.clearFieldError(inputErrorKey);
-      actions.updateProduct(productId, (product) => {
-        const steps = (product.repositionPlan || []).filter(
-          (entry) => Number(entry.round) !== round
-        );
-        steps.push({ round, size: sizeValue, performance: performanceValue });
-        steps.sort((a, b) => Number(a.round) - Number(b.round));
-        product.repositionPlan = steps;
-      });
-      return;
-    }
-
     const parsed = parseNumericInput(target.value);
     if (parsed === null) {
       actions.setFieldError(inputErrorKey, 'Numeric fields require finite numbers.');
@@ -632,13 +458,23 @@ export function initUI({ store, actions, chartController }) {
     }
 
     const { scenario, presets, playback, globalErrors, fieldErrors } = state;
+    const totalMonths = Number(scenario.meta?.rounds || 8) * 12;
     const selectedRound = Number(scenario.ui.selectedRound || 1);
+    const selectedMonthIndex = Number.isInteger(Number(scenario.ui.selectedMonthIndex))
+      ? Number(scenario.ui.selectedMonthIndex)
+      : (selectedRound - 1) * 12;
+    const monthInRound = (selectedMonthIndex % 12) + 1;
+    const monthName = MONTH_NAMES[selectedMonthIndex % 12] || MONTH_NAMES[0];
+    const selectedYear = Number(scenario.meta.startYear) + Math.floor(selectedMonthIndex / 12);
 
     renderScenarioOptions(scenarioSelect, presets, state.activePresetName);
-    roundSlider.value = String(selectedRound);
+    roundSlider.min = '0';
+    roundSlider.max = String(Math.max(0, totalMonths - 1));
+    roundSlider.step = '1';
+    roundSlider.value = String(selectedMonthIndex);
     renderRoundSelect(roundSelect, selectedRound);
-    roundLabel.textContent = `Round ${selectedRound}`;
-    yearLabel.textContent = `Year ${Number(scenario.meta.startYear) + (selectedRound - 1)}`;
+    roundLabel.textContent = `Round ${selectedRound} - Month ${monthInRound}/12`;
+    yearLabel.textContent = `${monthName} ${selectedYear} (Month ${selectedMonthIndex + 1}/${totalMonths})`;
 
     playPauseButton.textContent = playback.isPlaying ? 'Pause' : 'Play';
 
@@ -651,13 +487,13 @@ export function initUI({ store, actions, chartController }) {
 
     renderSegmentEditor(segmentEditor, scenario, fieldErrors);
     renderProductEditor(productEditor, scenario, fieldErrors);
-    renderFitTable(fitTableBody, scenario, selectedRound);
-    renderCustomLegend(legendContainer, scenario, selectedRound);
+    renderFitTable(fitTableBody, scenario, selectedMonthIndex);
+    renderCustomLegend(legendContainer, scenario, selectedMonthIndex);
     renderErrors(globalErrorsContainer, globalErrors);
 
     chartController.update({
       scenario,
-      round: selectedRound,
+      monthIndex: selectedMonthIndex,
       selectedProductId: scenario.ui.selectedProductId,
       showFitLines: scenario.ui.showFitLines,
     });

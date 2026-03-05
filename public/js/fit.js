@@ -1,4 +1,4 @@
-import { buildRoundSnapshot } from './model.js';
+import { buildMonthSnapshot, buildRoundSnapshot } from './model.js';
 
 export function euclideanDistance(pointA, pointB) {
   const dx = Number(pointA.size) - Number(pointB.size);
@@ -8,7 +8,15 @@ export function euclideanDistance(pointA, pointB) {
 
 export function computeFitForRound(scenario, round) {
   const snapshot = buildRoundSnapshot(scenario, round);
+  return computeFitFromSnapshot(snapshot);
+}
 
+export function computeFitForMonth(scenario, monthIndex) {
+  const snapshot = buildMonthSnapshot(scenario, monthIndex);
+  return computeFitFromSnapshot(snapshot);
+}
+
+function computeFitFromSnapshot(snapshot) {
   // product fit computation happens here: Euclidean distance from each product to each segment center.
   return snapshot.products.map((product) => {
     const distances = snapshot.segments.map((segment) => ({
@@ -42,6 +50,24 @@ export function buildDistanceLines(scenario, round, selectedProductId) {
   }
 
   const snapshot = buildRoundSnapshot(scenario, round);
+  const selected = snapshot.products.find((product) => product.id === selectedProductId);
+  if (!selected) {
+    return [];
+  }
+
+  return snapshot.segments.map((segment) => ({
+    id: `${selected.id}-${segment.id}`,
+    from: selected.point,
+    to: segment.point,
+  }));
+}
+
+export function buildDistanceLinesForMonth(scenario, monthIndex, selectedProductId) {
+  if (!selectedProductId) {
+    return [];
+  }
+
+  const snapshot = buildMonthSnapshot(scenario, monthIndex);
   const selected = snapshot.products.find((product) => product.id === selectedProductId);
   if (!selected) {
     return [];

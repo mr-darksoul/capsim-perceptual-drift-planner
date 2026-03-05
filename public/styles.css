@@ -114,7 +114,12 @@ p {
 }
 
 .playback-controls input[type="range"] {
-  width: 220px;
+  width: 100%;
+}
+
+.playback-controls label:first-child {
+  flex: 1 1 560px;
+  min-width: 280px;
 }
 
 button,
@@ -336,6 +341,5 @@ button.danger {
 
   .playback-controls input[type="range"] {
     width: 100%;
-    max-width: 320px;
   }
 }

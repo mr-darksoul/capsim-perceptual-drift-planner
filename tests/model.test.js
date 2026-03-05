@@ -58,7 +58,7 @@ test('points are clamped to chart bounds', () => {
   assert.equal(clamped.performance, 20);
 });
 
-test('product uses latest reposition plan up to selected round', () => {
+test('product stays at start position across rounds', () => {
   const product = {
     start: { size: 10, performance: 10 },
     repositionPlan: [
@@ -72,6 +72,6 @@ test('product uses latest reposition plan up to selected round', () => {
   const atRound8 = getProductPositionAtRound(product, 8, bounds);
 
   assert.deepEqual(atRound2, { size: 10, performance: 10 });
-  assert.deepEqual(atRound4, { size: 11, performance: 12 });
-  assert.deepEqual(atRound8, { size: 13, performance: 15 });
+  assert.deepEqual(atRound4, { size: 10, performance: 10 });
+  assert.deepEqual(atRound8, { size: 10, performance: 10 });
 });

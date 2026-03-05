@@ -24,7 +24,7 @@ npm test
 ```
 
 ## Features
-- Round 1..8 slider + dropdown + play/pause animation.
+- Month-by-month drift slider (96 months across 8 rounds) + round dropdown + play/pause animation.
 - Segment drift model with:
   - start center (size, performance)
   - drift per round (delta size, delta performance)
@@ -34,8 +34,7 @@ npm test
   - existing/proposed tag
   - color + icon
   - start position
-  - per-round reposition plan
-- Fit insights for selected round:
+- Fit insights for selected month:
   - Euclidean distance to each segment
   - nearest segment and nearest distance
   - optional distance lines from selected product
@@ -55,6 +54,8 @@ npm test
 - Chart bounds are fixed to `0..20` for Size and Performance.
 - Rounds are fixed to `8`.
 - Round mapping uses **Round 1 = start values**.
+- Round 1 starts in **2027**.
+- Monthly drift assumes linear interpolation: `yearly drift / 12`.
 - Import behavior is **replace current scenario on valid import**.
 
 ## How To Use

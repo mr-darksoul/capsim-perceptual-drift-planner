@@ -1,7 +1,8 @@
-import { buildDistanceLines } from './fit.js';
-import { buildRoundSnapshot } from './model.js';
+import { buildDistanceLinesForMonth } from './fit.js';
+import { buildMonthSnapshot } from './model.js';
 
 const SEGMENT_ZONE_RADIUS_UNITS = 2.5;
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const segmentZonePlugin = {
   id: 'segmentZonePlugin',
@@ -107,7 +108,7 @@ export function createPerceptualChart(canvasElement) {
                   : point.kind === 'ideal'
                   ? 'Ideal'
                   : 'Product';
-              return `${type}: ${point.label} | Round ${point.round} | ${formatPointLabel(point)}`;
+              return `${type}: ${point.label} | ${point.monthLabel} | Round ${point.round} | ${formatPointLabel(point)}`;
             },
           },
         },
@@ -141,9 +142,10 @@ export function createPerceptualChart(canvasElement) {
     },
   });
 
-  function update({ scenario, round, selectedProductId, showFitLines }) {
-    const snapshot = buildRoundSnapshot(scenario, round);
+  function update({ scenario, monthIndex, selectedProductId, showFitLines }) {
+    const snapshot = buildMonthSnapshot(scenario, monthIndex);
     const bounds = scenario.chartBounds;
+    const monthLabel = `${MONTH_NAMES[snapshot.month]} ${snapshot.year}`;
 
     chart.options.scales.x.min = bounds.performanceMin;
     chart.options.scales.x.max = bounds.performanceMax;
@@ -158,6 +160,7 @@ export function createPerceptualChart(canvasElement) {
       label: segment.name,
       id: segment.id,
       round: snapshot.round,
+      monthLabel,
       kind: 'segment',
       color: segment.color,
     }));
@@ -168,6 +171,7 @@ export function createPerceptualChart(canvasElement) {
       label: `${segment.name} Ideal`,
       id: `${segment.id}-ideal`,
       round: snapshot.round,
+      monthLabel,
       kind: 'ideal',
       color: '#0b3d91',
     }));
@@ -184,6 +188,7 @@ export function createPerceptualChart(canvasElement) {
       label: product.name,
       id: product.id,
       round: snapshot.round,
+      monthLabel,
       kind: 'product',
       color: product.color,
       pointStyle: product.icon,
@@ -223,7 +228,7 @@ export function createPerceptualChart(canvasElement) {
     ];
 
     if (showFitLines && selectedProductId) {
-      const lines = buildDistanceLines(scenario, round, selectedProductId);
+      const lines = buildDistanceLinesForMonth(scenario, snapshot.monthIndex, selectedProductId);
       for (const line of lines) {
         datasets.push({
           label: `line-${line.id}`,
@@ -232,14 +237,16 @@ export function createPerceptualChart(canvasElement) {
               x: line.from.performance,
               y: line.from.size,
               label: 'From',
-              round,
+              round: snapshot.round,
+              monthLabel,
               kind: 'line',
             },
             {
               x: line.to.performance,
               y: line.to.size,
               label: 'To',
-              round,
+              round: snapshot.round,
+              monthLabel,
               kind: 'line',
             },
           ],
