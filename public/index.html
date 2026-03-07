@@ -71,35 +71,50 @@
           <div id="global-errors" aria-live="polite"></div>
         </section>
 
-        <section class="panel-section">
-          <div class="section-head">
+        <details class="panel-section panel-collapsible" open>
+          <summary class="section-summary">
             <h2>Products</h2>
-            <button id="add-product" type="button">Add Product</button>
+            <span class="summary-toggle-label">Tap to expand</span>
+          </summary>
+          <div class="section-content">
+            <div class="section-head">
+              <button id="add-product" type="button">Add Product</button>
+            </div>
+            <div id="product-editor" class="editor-list"></div>
           </div>
-          <div id="product-editor" class="editor-list"></div>
-        </section>
+        </details>
 
-        <section class="panel-section">
-          <h2>Segment Drift</h2>
-          <div id="segment-editor" class="editor-list"></div>
-        </section>
-
-        <section class="panel-section">
-          <h2>Fit Insights (Selected Round)</h2>
-          <div class="fit-table-wrap">
-            <table class="fit-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Nearest Segment</th>
-                  <th>Nearest Dist.</th>
-                  <th>Distances to Segments</th>
-                </tr>
-              </thead>
-              <tbody id="fit-table-body"></tbody>
-            </table>
+        <details class="panel-section panel-collapsible">
+          <summary class="section-summary">
+            <h2>Segment Drift</h2>
+            <span class="summary-toggle-label">Tap to expand</span>
+          </summary>
+          <div class="section-content">
+            <div id="segment-editor" class="editor-list"></div>
           </div>
-        </section>
+        </details>
+
+        <details class="panel-section panel-collapsible">
+          <summary class="section-summary">
+            <h2>Fit Insights (Selected Round)</h2>
+            <span class="summary-toggle-label">Tap to expand</span>
+          </summary>
+          <div class="section-content">
+            <div class="fit-table-wrap">
+              <table class="fit-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Nearest Segment</th>
+                    <th>Nearest Dist.</th>
+                    <th>Distances to Segments</th>
+                  </tr>
+                </thead>
+                <tbody id="fit-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
       </aside>
     </main>
 

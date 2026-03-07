@@ -10,25 +10,57 @@ import { clampPoint, normalizeBounds, normalizeMonthIndex, normalizeRound } from
 const ROUND_ONE_YEAR = 2027;
 
 async function fetchPresets() {
-  const response = await fetch('/api/presets');
-  if (!response.ok) {
+  try {
+    const response = await fetch('/api/presets');
+    if (response.ok) {
+      const payload = await response.json();
+      return Array.isArray(payload.presets) ? payload.presets : [];
+    }
+  } catch (_error) {
+    // Fallback used by offline Android builds where /api is unavailable.
+  }
+
+  const fallbackResponse = await fetch('/data/presets.json');
+  if (!fallbackResponse.ok) {
     throw new Error('Failed to load presets.');
   }
-  const payload = await response.json();
-  return Array.isArray(payload.presets) ? payload.presets : [];
+  const fallbackPayload = await fallbackResponse.json();
+  return Array.isArray(fallbackPayload.presets) ? fallbackPayload.presets : [];
 }
 
 async function validateScenarioServer(candidate) {
-  const response = await fetch('/api/scenario/validate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(candidate),
-  });
+  try {
+    const response = await fetch('/api/scenario/validate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(candidate),
+    });
+    const payload = await response.json();
+    if (typeof payload?.valid === 'boolean') {
+      return payload;
+    }
+  } catch (_error) {
+    // Fallback used by offline Android builds where /api is unavailable.
+  }
 
-  const payload = await response.json();
-  return payload;
+  const validation = validateScenarioClient(candidate);
+  if (!validation.valid) {
+    return {
+      valid: false,
+      errors: validation.errors,
+      normalizedScenario: null,
+    };
+  }
+
+  const normalizedScenario = normalizeScenarioClient(candidate);
+  const normalizedValidation = validateScenarioClient(normalizedScenario);
+  return {
+    valid: normalizedValidation.valid,
+    errors: normalizedValidation.errors,
+    normalizedScenario: normalizedValidation.valid ? normalizedScenario : null,
+  };
 }
 
 function normalizeScenarioClient(scenario) {
