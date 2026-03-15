@@ -2,6 +2,13 @@
 
 Local-first web app for visualizing Capstone 2.0 segment drift on a Size vs Performance perceptual map across 4 rounds, adding/editing products, and evaluating product-segment fit over time.
 
+## Deploy (Render)
+- One-click deploy: [Deploy to Render](https://dashboard.render.com/blueprint/new?repo=https%3A%2F%2Fgithub.com%2Fmr-darksoul%2Fcapsim-perceptual-drift-planner)
+- The repo includes `render.yaml` with:
+  - Build command: `npm install`
+  - Start command: `npm start`
+  - Health check: `/api/health`
+
 ## Prerequisites
 - Node.js 18+
 
