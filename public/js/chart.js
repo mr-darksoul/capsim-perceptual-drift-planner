@@ -2,6 +2,7 @@ import { buildDistanceLinesForMonth } from './fit.js';
 import { buildMonthSnapshot } from './model.js';
 
 const SEGMENT_ZONE_RADIUS_UNITS = 2.5;
+const FINE_CUT_RADIUS_UNITS = 4;
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const segmentZonePlugin = {
@@ -17,6 +18,8 @@ const segmentZonePlugin = {
     }
 
     const radiusUnits = Number(pluginOptions.radiusUnits) || SEGMENT_ZONE_RADIUS_UNITS;
+    const fineCutRadiusUnits =
+      Number(pluginOptions.fineCutRadiusUnits) || FINE_CUT_RADIUS_UNITS;
     const xScale = chart.scales.x;
     const yScale = chart.scales.y;
     const { ctx } = chart;
@@ -60,6 +63,19 @@ const segmentZonePlugin = {
       ctx.lineWidth = 1.2;
       ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
       ctx.stroke();
+
+      const fineCutRadiusX = Math.abs(xScale.getPixelForValue(zone.x + fineCutRadiusUnits) - centerX);
+      const fineCutRadiusY = Math.abs(yScale.getPixelForValue(zone.y + fineCutRadiusUnits) - centerY);
+      const fineCutRadius = Math.min(fineCutRadiusX, fineCutRadiusY);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([5, 4]);
+      ctx.arc(centerX, centerY, fineCutRadius, 0, Math.PI * 2);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(71, 85, 105, 0.65)';
+      ctx.stroke();
+      ctx.restore();
     }
   },
 };
@@ -115,6 +131,7 @@ export function createPerceptualChart(canvasElement) {
         segmentZonePlugin: {
           enabled: true,
           radiusUnits: SEGMENT_ZONE_RADIUS_UNITS,
+          fineCutRadiusUnits: FINE_CUT_RADIUS_UNITS,
           zones: [],
         },
       },
@@ -179,6 +196,7 @@ export function createPerceptualChart(canvasElement) {
     chart.options.plugins.segmentZonePlugin = {
       enabled: true,
       radiusUnits: SEGMENT_ZONE_RADIUS_UNITS,
+      fineCutRadiusUnits: FINE_CUT_RADIUS_UNITS,
       zones: segmentPoints,
     };
 
