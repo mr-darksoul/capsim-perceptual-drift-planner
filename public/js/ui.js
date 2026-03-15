@@ -1,4 +1,4 @@
-import { ICON_OPTIONS, TAG_OPTIONS, getRoundsList } from './constants.js';
+import { ICON_OPTIONS, TAG_OPTIONS, ROUNDS, getRoundsList } from './constants.js';
 import { computeFitForMonth } from './fit.js';
 import { buildMonthSnapshot } from './model.js';
 
@@ -122,12 +122,12 @@ function renderSegmentEditor(container, scenario, fieldErrors) {
                 segment.id
               )}" value="${escapeHtml(segment.color)}" />
             </label>
-            <label>Start Size
+            <label>Round 0 Size (End)
               <input type="number" step="0.1" data-action="segment-start-size" data-segment-id="${escapeHtml(
                 segment.id
               )}" value="${escapeHtml(segment.start.size)}" />
             </label>
-            <label>Start Performance
+            <label>Round 0 Performance (End)
               <input type="number" step="0.1" data-action="segment-start-performance" data-segment-id="${escapeHtml(
                 segment.id
               )}" value="${escapeHtml(segment.start.performance)}" />
@@ -458,7 +458,7 @@ export function initUI({ store, actions, chartController }) {
     }
 
     const { scenario, presets, playback, globalErrors, fieldErrors } = state;
-    const totalMonths = Number(scenario.meta?.rounds || 8) * 12;
+    const totalMonths = Number(scenario.meta?.rounds || ROUNDS) * 12;
     const selectedRound = Number(scenario.ui.selectedRound || 1);
     const selectedMonthIndex = Number.isInteger(Number(scenario.ui.selectedMonthIndex))
       ? Number(scenario.ui.selectedMonthIndex)

@@ -1,6 +1,6 @@
-export const ROUNDS = 8;
+export const ROUNDS = 4;
 
-export const STORAGE_KEY = 'capsim-drift-planner:v1';
+export const STORAGE_KEY = 'capsim-drift-planner:v2';
 
 export const DEFAULT_BOUNDS = Object.freeze({
   sizeMin: 0,

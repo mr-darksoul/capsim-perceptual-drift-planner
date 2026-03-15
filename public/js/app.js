@@ -7,7 +7,7 @@ import { exportScenarioToFile, readJsonFile } from './importExport.js';
 import { validateScenarioClient } from './validation.js';
 import { clampPoint, normalizeBounds, normalizeMonthIndex, normalizeRound } from './model.js';
 
-const ROUND_ONE_YEAR = 2027;
+const ROUND_ONE_YEAR = 2026;
 
 async function fetchPresets() {
   try {

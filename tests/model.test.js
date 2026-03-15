@@ -24,8 +24,8 @@ test('segment uses start values for round 1', () => {
   };
 
   const point = getSegmentPositionAtRound(segment, 1, bounds);
-  assert.equal(point.size, 13.9);
-  assert.equal(point.performance, 6.1);
+  assert.ok(Math.abs(point.size - 13.2) < 1e-9);
+  assert.ok(Math.abs(point.performance - 6.8) < 1e-9);
 });
 
 test('segment drift applies for non-overridden rounds', () => {
@@ -36,8 +36,8 @@ test('segment drift applies for non-overridden rounds', () => {
   };
 
   const point = getSegmentPositionAtRound(segment, 4, bounds);
-  assert.equal(point.size, 11.8);
-  assert.equal(point.performance, 8.2);
+  assert.ok(Math.abs(point.size - 11.1) < 1e-9);
+  assert.ok(Math.abs(point.performance - 8.9) < 1e-9);
 });
 
 test('segment override takes precedence over drift', () => {

@@ -23,7 +23,7 @@ test('invalid round in override fails validation', () => {
 
   const result = normalizeScenario(baseline);
   assert.equal(result.valid, false);
-  assert.ok(result.errors.some((error) => error.includes('must be an integer from 1 to 8')));
+  assert.ok(result.errors.some((error) => error.includes('must be an integer from 1 to 4')));
 });
 
 test('duplicate product names fail validation', () => {

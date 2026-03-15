@@ -1,11 +1,10 @@
 import { DEFAULT_BOUNDS, ROUNDS } from './constants.js';
 
 const IDEAL_OFFSETS = Object.freeze({
-  traditional: Object.freeze({ deltaPerformance: 0.0, deltaSize: 0.0 }),
-  lowend: Object.freeze({ deltaPerformance: -0.8, deltaSize: 0.8 }),
-  highend: Object.freeze({ deltaPerformance: 1.4, deltaSize: -1.4 }),
-  performance: Object.freeze({ deltaPerformance: 1.4, deltaSize: -1.0 }),
-  size: Object.freeze({ deltaPerformance: 1.0, deltaSize: -1.4 }),
+  thrift: Object.freeze({ deltaPerformance: 0.0, deltaSize: 0.0 }),
+  core: Object.freeze({ deltaPerformance: 0.4, deltaSize: -0.4 }),
+  nano: Object.freeze({ deltaPerformance: 0.8, deltaSize: -1.1 }),
+  elite: Object.freeze({ deltaPerformance: 1.1, deltaSize: -0.8 }),
 });
 
 function segmentKey(segment) {
@@ -22,19 +21,18 @@ function getMetaRounds(scenario) {
 }
 
 function getSegmentPositionAtAbsoluteRound(segment, roundNumber, bounds) {
-  const resolvedRound = Math.max(1, Number.parseInt(roundNumber, 10) || 1);
+  const parsedRound = Number.parseInt(roundNumber, 10);
+  const resolvedRound = Number.isInteger(parsedRound) ? parsedRound : 1;
   const overrides = Array.isArray(segment.overrides) ? segment.overrides : [];
   const override = overrides.find((entry) => Number(entry.round) === resolvedRound);
 
   const computed = override
     ? { size: Number(override.size), performance: Number(override.performance) }
     : {
-        size:
-          Number(segment.start.size) +
-          (resolvedRound - 1) * Number(segment.driftPerRound.deltaSize),
+        size: Number(segment.start.size) + resolvedRound * Number(segment.driftPerRound.deltaSize),
         performance:
           Number(segment.start.performance) +
-          (resolvedRound - 1) * Number(segment.driftPerRound.deltaPerformance),
+          resolvedRound * Number(segment.driftPerRound.deltaPerformance),
       };
 
   return clampPoint(computed, bounds);
@@ -87,13 +85,13 @@ export function normalizeRound(round) {
 
 export function getSegmentPositionAtRound(segment, round, bounds) {
   const resolvedRound = normalizeRound(round);
-  // drift calculation happens here: Round 1 is start, then each later round adds yearly drift.
+  // drift calculation happens here: each round center is treated as an end-of-year point.
   return getSegmentPositionAtAbsoluteRound(segment, resolvedRound, bounds);
 }
 
 export function getSegmentIdealPositionAtRound(segment, round, bounds) {
   const centerPoint = getSegmentPositionAtRound(segment, round, bounds);
-  const offsets = IDEAL_OFFSETS[segmentKey(segment)] || IDEAL_OFFSETS.traditional;
+  const offsets = IDEAL_OFFSETS[segmentKey(segment)] || IDEAL_OFFSETS.thrift;
 
   return clampPoint(
     {
@@ -115,18 +113,19 @@ export function normalizeMonthIndex(monthIndex, rounds = ROUNDS) {
 
 export function getSegmentPositionAtMonth(segment, monthIndex, bounds) {
   const resolvedMonthIndex = Math.max(0, Number.parseInt(monthIndex, 10) || 0);
-  const baseRound = Math.floor(resolvedMonthIndex / 12) + 1;
+  const currentRound = Math.floor(resolvedMonthIndex / 12) + 1;
   const monthInYear = resolvedMonthIndex % 12;
   const interpolation = monthInYear / 12;
 
-  const basePoint = getSegmentPositionAtAbsoluteRound(segment, baseRound, bounds);
-  const nextPoint = getSegmentPositionAtAbsoluteRound(segment, baseRound + 1, bounds);
+  const startOfYearPoint = getSegmentPositionAtAbsoluteRound(segment, currentRound - 1, bounds);
+  const endOfYearPoint = getSegmentPositionAtAbsoluteRound(segment, currentRound, bounds);
 
   return clampPoint(
     {
       performance:
-        basePoint.performance + (nextPoint.performance - basePoint.performance) * interpolation,
-      size: basePoint.size + (nextPoint.size - basePoint.size) * interpolation,
+        startOfYearPoint.performance +
+        (endOfYearPoint.performance - startOfYearPoint.performance) * interpolation,
+      size: startOfYearPoint.size + (endOfYearPoint.size - startOfYearPoint.size) * interpolation,
     },
     bounds
   );
@@ -134,7 +133,7 @@ export function getSegmentPositionAtMonth(segment, monthIndex, bounds) {
 
 export function getSegmentIdealPositionAtMonth(segment, monthIndex, bounds) {
   const centerPoint = getSegmentPositionAtMonth(segment, monthIndex, bounds);
-  const offsets = IDEAL_OFFSETS[segmentKey(segment)] || IDEAL_OFFSETS.traditional;
+  const offsets = IDEAL_OFFSETS[segmentKey(segment)] || IDEAL_OFFSETS.thrift;
 
   return clampPoint(
     {

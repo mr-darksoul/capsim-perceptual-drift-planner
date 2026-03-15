@@ -1,6 +1,6 @@
 # Capstone 2.0 Perceptual Drift Planner
 
-Local-first web app for visualizing Capstone 2.0 segment drift on a Size vs Performance perceptual map across 8 rounds, adding/editing products, and evaluating product-segment fit over time.
+Local-first web app for visualizing Capstone 2.0 segment drift on a Size vs Performance perceptual map across 4 rounds, adding/editing products, and evaluating product-segment fit over time.
 
 ## Prerequisites
 - Node.js 18+
@@ -24,7 +24,7 @@ npm test
 ```
 
 ## Features
-- Month-by-month drift slider (96 months across 8 rounds) + round dropdown + play/pause animation.
+- Month-by-month drift slider (48 months across 4 rounds) + round dropdown + play/pause animation.
 - Segment drift model with:
   - start center (size, performance)
   - drift per round (delta size, delta performance)
@@ -52,9 +52,10 @@ npm test
 
 ## Scenario Notes
 - Chart bounds are fixed to `0..20` for Size and Performance.
-- Rounds are fixed to `8`.
-- Round mapping uses **Round 1 = start values**.
-- Round 1 starts in **2027**.
+- Rounds are fixed to `4`.
+- Segment center coordinates are treated as **end-of-year** values for each round.
+- Month interpolation runs from previous year-end center to current year-end center.
+- Round 1 starts in **2026**.
 - Monthly drift assumes linear interpolation: `yearly drift / 12`.
 - Import behavior is **replace current scenario on valid import**.
 
